@@ -110,7 +110,7 @@ impl FetchResponses {
         let auth = base64::encode(auth_str);
 
         let client = reqwest::Client::new();
-        let http_response = client
+        let http_response = match client
             .get(Url::new().get_fetch_url(&_args.username) + &refx)
             .header("Accept", "application/json")
             .header("Content-Type", "application/json")
@@ -119,13 +119,15 @@ impl FetchResponses {
             .send()
             .await?
             .text()
-            .await
-            .unwrap();
+            .await {
+                Ok(hr) => hr,
+                Err(_) => Err("Error getting transaction http response")?
+            };
 
         let r: FetchResponses = match serde_json::from_str(http_response.as_str()) {
             Ok(r) => r,
             Err(_) => {
-                return return_error("00Error voiding transaction: ", &refx);
+                return return_error("Error fetching transaction: ", &refx);
             }
         };
 
@@ -165,11 +167,11 @@ impl FetchResponses {
                     return Ok(b);
                 } else {
                     println!("{} - Voiding failed - {:?}",&refx,b.errors.unwrap().unwrap().errors.first().unwrap());
-                    return return_error("01Error voiding transaction: ", &refx);
+                    return return_error("Error voiding transaction: ", &refx);
                 }
             }
             Err(_r) => {
-                return return_error("02Error voiding transaction: ", &refx);     
+                return return_error("Error voiding transaction: ", &refx);     
             }
         };
     }
@@ -266,10 +268,14 @@ fn fetch_n_void(_params: &Params,reference: &Option<&String>) -> Result<(), Box<
     if let Ok(fetch_response) = block_on(future_purchase) {
         let fe = fetch_response;
         if fe.successful {
-            let future_void =
-                FetchResponses::void_transaction(&_params, &refx, fe.response.unwrap().unwrap().id);
-            if let Ok(r) = block_on(future_void) {
-                println!("{} - Voiding failed - {:?}",&refx,r.errors.unwrap().unwrap().errors.first().unwrap());
+            let f = match fe.response.flatten() {
+                Some(r) => r,
+                _ => FetchResponse {id: 0.to_string()},
+            };
+
+            let future_void = FetchResponses::void_transaction(&_params, &refx, f.id);
+
+            if let Ok(_r) = block_on(future_void) {
                 return Ok(());
             } else {
                 return_error("Error voiding transaction: ", refx)
