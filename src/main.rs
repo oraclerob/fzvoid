@@ -272,14 +272,14 @@ fn fetch_n_void(_params: &Params,reference: &Option<&String>) -> Result<(), Box<
                 println!("{} - Voiding failed - {:?}",&refx,r.errors.unwrap().unwrap().errors.first().unwrap());
                 return Ok(());
             } else {
-                return_error("1Error voiding transaction: ", refx)
+                return_error("Error voiding transaction: ", refx)
             }
         } else {
             println!("{} - Voiding failed - {:?}",&refx,fe.errors.unwrap().unwrap().errors.first().unwrap());
-            return_error("2Error voiding transaction: ", refx)
+            return_error("Could not fetch transaction: ", refx)
         }
     } else {
-        return_error("3Error fetching transaction: ", refx)
+        return_error("Error fetching transaction: ", refx)
     }
 
 }
