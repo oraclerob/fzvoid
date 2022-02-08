@@ -1,0 +1,16 @@
+[package]
+name = "fzvoid"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+futures = "0.3"
+clap = { version = "3.0.13", features = ["derive"] }
+reqwest = { version = "0.11", features = ["json"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+base64 = "0.13.0"
+async-trait = "0.1.52"
+serde_json = "1.0.78"
