@@ -3,4 +3,5 @@ A utility to quickly void Fat Zebra transactions. You can specify a reference or
 For example:
 
 fzvoid --username SC-scnet -t xxxxxxxxxxxxxxxxxx --reference reference_no
+
 fzvoid --username SC-scnet -t xxxxxxxxxxxxxxxxxx --filename file_of_refs
