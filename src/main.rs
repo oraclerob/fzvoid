@@ -1,8 +1,11 @@
+// SPDX-License-Identifier: MIT OR Apache-2.0
+//
+// Copyright (c) 2022 Robert Mascaro
+
 mod macros;
 
 use clap::Parser;
 use futures::executor::block_on;
-use std::borrow::BorrowMut;
 use std::error::Error;
 use std::time::Duration;
 
@@ -236,7 +239,7 @@ fn return_error<T>(msg: &str, reference: &String) -> Result<T, Box<dyn Error>>
 }
 
 fn read_file(filename: impl AsRef<Path>) -> Vec<String> {
-    let file = match File::open(filename).map_err(|_| "Please specify a valid file name") {
+    match File::open(filename).map_err(|_| "Please specify a valid file name") {
         Ok(file) => {
             let buf = BufReader::new(file);
             return buf.lines()
@@ -244,7 +247,7 @@ fn read_file(filename: impl AsRef<Path>) -> Vec<String> {
             .collect();
         },
         Err(_) => return vec![]
-        };
+    };
 }
 
 fn fetch_n_void(_params: &Params,reference: &Option<&String>) -> Result<(), Box<dyn Error>> {
